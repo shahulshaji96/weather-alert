@@ -1,15 +1,13 @@
 const request = require("supertest");
-const app = require("../app"); // Assuming your Express app is in 'app.js'
-const { sequelize } = require("../config/db"); // Assuming Sequelize config is here
-const City = require("../models/City"); // Assuming you have a City model
+const app = require("../app");
+const { sequelize } = require("../config/db");
+const City = require("../models/City");
 
 beforeAll(async () => {
-  // Set up any necessary test database state
-  await sequelize.sync(); // Sync the DB
+  await sequelize.sync();
 });
 
 afterAll(async () => {
-  // Clean up the test database
   await sequelize.close();
 });
 
@@ -24,7 +22,6 @@ describe("Cities API", () => {
     });
 
     it("should return 404 if no cities are found", async () => {
-      // Clear the City table before the test
       await City.destroy({ where: {} });
 
       const res = await request(app).get("/cities");
@@ -49,10 +46,7 @@ describe("Cities API", () => {
     it("should return 400 if city already exists in the monitoring list", async () => {
       const cityName = "New York";
 
-      // First, add the city
       await request(app).post("/cities").send({ city: cityName });
-
-      // Try to add it again
       const res = await request(app).post("/cities").send({ city: cityName });
 
       expect(res.status).toBe(400);
